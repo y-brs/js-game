@@ -1,3 +1,5 @@
+import { deepClone } from './utils.js';
+
 export class Game {
   constructor(rowsCount, columnsCount, elementsCount) {
     this.rowsCount = rowsCount;
@@ -79,9 +81,19 @@ export class Game {
     const swapStates = [];
     let removedElements = 0;
 
-    removedElements = this.removeAllRows();
+    do {
+      removedElements = this.removeAllRows();
 
-    console.log(this.matrix);
+      if (removedElements > 0) {
+        this.score += removedElements;
+        swapStates.push(deepClone(this.matrix));
+        this.dropElements();
+        this.fillBlanks();
+        swapStates.push(deepClone(this.matrix));
+      }
+    } while (removedElements > 0);
+
+    return swapStates;
   }
 
   swapTwoElements(firstElement, secondElement) {
@@ -123,5 +135,42 @@ export class Game {
       }
     }
     return count;
+  }
+
+  dropElements() {
+    for (let column = 0; column < this.columnsCount; column++) {
+      this.dropElementsInColumn(column);
+    }
+  }
+
+  dropElementsInColumn(column) {
+    let emptyIndex;
+
+    for (let row = this.rowsCount - 1; row >= 0; row--) {
+      if (this.matrix[row][column] === null) {
+        emptyIndex = row;
+        break;
+      }
+    }
+
+    if (emptyIndex === undefined) return;
+
+    for (let row = emptyIndex - 1; row >= 0; row--) {
+      if (this.matrix[row][column] !== null) {
+        this.matrix[emptyIndex][column] = this.matrix[row][column];
+        this.matrix[row][column] = null;
+        emptyIndex--;
+      }
+    }
+  }
+
+  fillBlanks() {
+    for (let row = 0; row < this.rowsCount; row++) {
+      for (let column = 0; column < this.columnsCount; column++) {
+        if (this.matrix[row][column] === null) {
+          this.matrix[row][column] = this.getRandomValue();
+        }
+      }
+    }
   }
 }
