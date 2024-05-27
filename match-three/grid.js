@@ -3,6 +3,7 @@ import { Tile } from './tile.js';
 export class Grid {
   tiles = [];
   selectedTile = null;
+  isGameBlocked = false;
 
   constructor(wrapper, matrix) {
     this.wrapper = wrapper;
@@ -23,6 +24,8 @@ export class Grid {
   }
 
   handleTileClick = (row, column) => {
+    if (this.isGameBlocked) return;
+
     if (!this.selectedTile) {
       this.selectTile(row, column);
       return;
@@ -35,6 +38,18 @@ export class Grid {
       this.selectTile(row, column);
       return;
     }
+
+    const firstElementPosition = { row: this.selectedTile.row, column: this.selectedTile.column };
+    const secondElementPosition = { row, column };
+
+    const event = new CustomEvent('swap', {
+      detail: {
+        firstElementPosition,
+        secondElementPosition,
+      },
+    });
+
+    this.wrapper.dispatchEvent(event);
   };
 
   selectTile(row, column) {
@@ -52,8 +67,32 @@ export class Grid {
   }
 
   isSelectedNeighbours(row, column) {
-    const isColumnNeighbours = (this.selectTile.column === column && Math.abs(this.selectTile.row - row)) === 1;
-    const isRowNeighbours = this.selectTile.row === row && Math.abs(this.selectTile.column - column) === 1;
+    const isColumnNeighbours = this.selectedTile.column === column && Math.abs(this.selectedTile.row - row) === 1;
+    const isRowNeighbours = this.selectedTile.row === row && Math.abs(this.selectedTile.column - column) === 1;
     return isColumnNeighbours || isRowNeighbours;
+  }
+
+  async swap(firstTilePosition, secondTilePosition, swapStates) {
+    this.isGameBlocked = true;
+
+    const firstTile = this.findTyleBy(firstTilePosition.row, firstTilePosition.column);
+    const secondTile = this.findTyleBy(secondTilePosition.row, secondTilePosition.column);
+    this.unSelectTile();
+    const firstTileAnimation = this.moveTileTo(firstTile, secondTilePosition);
+    const secondTileAnimation = this.moveTileTo(secondTile, firstTilePosition);
+    await Promise.all([firstTileAnimation, secondTileAnimation]);
+
+    if (!swapStates) {
+      const firstTileAnimation = this.moveTileTo(firstTile, firstTilePosition);
+      const secondTileAnimation = this.moveTileTo(secondTile, secondTilePosition);
+      await Promise.all([firstTileAnimation, secondTileAnimation]);
+      this.isGameBlocked = false;
+      return;
+    }
+  }
+
+  async moveTileTo(tile, position) {
+    tile.setPositionBy(position.row, position.column);
+    await tile.waitForTransitionEnd();
   }
 }

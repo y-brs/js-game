@@ -25,4 +25,10 @@ export class Tile {
   unSelect() {
     this.tileElement.classList.remove('selected');
   }
+
+  waitForTransitionEnd() {
+    return new Promise((resolve) => {
+      this.tileElement.addEventListener('transitionend', resolve, { once: true });
+    });
+  }
 }

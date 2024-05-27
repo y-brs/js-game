@@ -67,4 +67,21 @@ export class Game {
 
     return elementsInRow >= 3;
   }
+
+  swap(firstElement, secondElement) {
+    this.swapTwoElements(firstElement, secondElement);
+    const isRowWithFirstElement = this.isRow(firstElement.row, firstElement.column);
+    const isRowWithSecondElement = this.isRow(secondElement.row, secondElement.column);
+
+    if (!isRowWithFirstElement && !isRowWithSecondElement) {
+      this.swapTwoElements(firstElement, secondElement);
+      return null;
+    }
+  }
+
+  swapTwoElements(firstElement, secondElement) {
+    const temp = this.matrix[firstElement.row][firstElement.column];
+    this.matrix[firstElement.row][firstElement.column] = this.matrix[secondElement.row][secondElement.column];
+    this.matrix[secondElement.row][secondElement.column] = temp;
+  }
 }
