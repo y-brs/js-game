@@ -18,5 +18,10 @@ export class MatchThree {
   async swap(firstElementPosition, secondElementPosition) {
     const swapStates = this.game.swap(firstElementPosition, secondElementPosition);
     await this.grid.swap(firstElementPosition, secondElementPosition, swapStates);
+    this.updateScore();
+  }
+
+  updateScore() {
+    document.querySelector('.score').innerHTML = this.game.score;
   }
 }
