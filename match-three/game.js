@@ -18,8 +18,6 @@ export class Game {
         } while (this.isRow(row, column));
       }
     }
-
-    // console.log(this.matrix);
   }
 
   getRandomValue() {
@@ -31,17 +29,17 @@ export class Game {
   }
 
   isVerticalRow(row, column) {
-    const value = this.matrix[row][column];
+    const absValue = Math.abs(this.matrix[row][column]);
     let elementsInRow = 1;
 
     let currentRow = row - 1;
-    while (currentRow >= 0 && this.matrix[currentRow][column] === value) {
+    while (currentRow >= 0 && Math.abs(this.matrix[currentRow][column]) === absValue) {
       elementsInRow++;
       currentRow--;
     }
 
     currentRow = row + 1;
-    while (currentRow <= this.rowsCount - 1 && this.matrix[currentRow][column] === value) {
+    while (currentRow <= this.rowsCount - 1 && Math.abs(this.matrix[currentRow][column]) === absValue) {
       elementsInRow++;
       currentRow++;
     }
@@ -50,17 +48,17 @@ export class Game {
   }
 
   isHorizontalRow(row, column) {
-    const value = this.matrix[row][column];
+    const absValue = Math.abs(this.matrix[row][column]);
     let elementsInRow = 1;
 
     let currentColumn = column - 1;
-    while (currentColumn >= 0 && this.matrix[row][currentColumn] === value) {
+    while (currentColumn >= 0 && Math.abs(this.matrix[row][currentColumn]) === absValue) {
       elementsInRow++;
       currentColumn--;
     }
 
     currentColumn = column + 1;
-    while (currentColumn <= this.columnsCount - 1 && this.matrix[row][currentColumn] === value) {
+    while (currentColumn <= this.columnsCount - 1 && Math.abs(this.matrix[row][currentColumn]) === absValue) {
       elementsInRow++;
       currentColumn++;
     }
@@ -77,11 +75,53 @@ export class Game {
       this.swapTwoElements(firstElement, secondElement);
       return null;
     }
+
+    const swapStates = [];
+    let removedElements = 0;
+
+    removedElements = this.removeAllRows();
+
+    console.log(this.matrix);
   }
 
   swapTwoElements(firstElement, secondElement) {
     const temp = this.matrix[firstElement.row][firstElement.column];
     this.matrix[firstElement.row][firstElement.column] = this.matrix[secondElement.row][secondElement.column];
     this.matrix[secondElement.row][secondElement.column] = temp;
+  }
+
+  removeAllRows() {
+    for (let row = 0; row < this.rowsCount; row++) {
+      for (let column = 0; column < this.columnsCount; column++) {
+        this.markElementToRemoveFor(row, column);
+      }
+    }
+
+    this.removeMarkedElements();
+    return this.calculateRemovedElements();
+  }
+
+  markElementToRemoveFor(row, column) {
+    if (this.isRow(row, column)) {
+      this.matrix[row][column] = -1 * Math.abs(this.matrix[row][column]);
+    }
+  }
+
+  removeMarkedElements() {
+    for (let row = 0; row < this.rowsCount; row++) {
+      for (let column = 0; column < this.columnsCount; column++) {
+        if (this.matrix[row][column] < 0) this.matrix[row][column] = null;
+      }
+    }
+  }
+
+  calculateRemovedElements() {
+    let count = 0;
+    for (let row = 0; row < this.rowsCount; row++) {
+      for (let column = 0; column < this.columnsCount; column++) {
+        if (this.matrix[row][column] === null) count++;
+      }
+    }
+    return count;
   }
 }
