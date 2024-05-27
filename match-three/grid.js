@@ -1,4 +1,5 @@
 import { Tile } from './tile.js';
+import { delay } from './utils.js';
 
 export class Grid {
   tiles = [];
@@ -18,9 +19,10 @@ export class Grid {
     }
   }
 
-  createTile(row, column, value) {
+  async createTile(row, column, value) {
     const tile = new Tile(this.wrapper, row, column, value, this.handleTileClick);
     this.tiles.push(tile);
+    await tile.waitForAnimationEnd();
   }
 
   handleTileClick = (row, column) => {
@@ -90,7 +92,13 @@ export class Grid {
       return;
     }
 
-    await this.removeTiles(swapStates[0]);
+    for (let i = 0; i < swapStates.length; i += 2) {
+      await this.removeTiles(swapStates[i]);
+      await this.dropTiles(swapStates[i], swapStates[i + 1]);
+      await delay(100);
+    }
+
+    this.isGameBlocked = false;
   }
 
   async moveTileTo(tile, position) {
@@ -110,10 +118,61 @@ export class Grid {
         }
       }
     }
+
     await Promise.all(animations);
   }
 
   removeTileFromArrayBy(row, column) {
     this.tiles = this.tiles.filter((tile) => tile.row !== row || tile.column !== column);
+  }
+
+  async dropTiles(gridBefore, gridAfter) {
+    const animations = [];
+    for (let column = 0; column < gridBefore[0].length; column++) {
+      const columnBefore = gridBefore.map((elementInRow) => elementInRow[column]);
+      const columnAfter = gridAfter.map((elementInRow) => elementInRow[column]);
+      const columnAnimations = this.dropTilesInColumn(columnBefore, columnAfter, column);
+      animations.push(columnAnimations);
+    }
+
+    await Promise.all(animations);
+  }
+
+  async dropTilesInColumn(columnBefore, columnAfter, column) {
+    let updatedColumn = [...columnBefore];
+    while (updatedColumn.includes(null)) {
+      updatedColumn = await this.dropTilesInColumnOnce(updatedColumn, column);
+      updatedColumn = await this.addTileInColumnOnce(updatedColumn, columnAfter, column);
+    }
+  }
+
+  async dropTilesInColumnOnce(columnBefore, column) {
+    const animations = [];
+    const updatedColumn = [...columnBefore];
+
+    for (let row = updatedColumn.length - 1; row > 0; row--) {
+      if (updatedColumn[row] === null && updatedColumn[row - 1] !== null) {
+        const tile = this.findTyleBy(row - 1, column);
+        const tileAnimation = this.moveTileTo(tile, { row, column });
+        updatedColumn[row] = updatedColumn[row - 1];
+        updatedColumn[row - 1] = null;
+        animations.push(tileAnimation);
+      }
+    }
+
+    await Promise.all(animations);
+    return updatedColumn;
+  }
+
+  async addTileInColumnOnce(columnBefore, columnAfter, column) {
+    const updatedColumn = [...columnBefore];
+
+    if (updatedColumn[0] === null) {
+      const countEmpty = updatedColumn.filter((value) => value === null).length;
+      await this.createTile(0, column, columnAfter[countEmpty - 1]);
+      updatedColumn[0] = columnAfter[countEmpty - 1];
+    }
+
+    return updatedColumn;
   }
 }
