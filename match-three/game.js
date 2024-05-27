@@ -19,7 +19,7 @@ export class Game {
       }
     }
 
-    console.log(this.matrix);
+    // console.log(this.matrix);
   }
 
   getRandomValue() {
