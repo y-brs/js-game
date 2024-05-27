@@ -62,8 +62,8 @@ export class Grid {
     this.selectedTile = null;
   }
 
-  findTyleBy(row, colum) {
-    return this.tiles.find((tile) => tile.row === row && tile.column === colum);
+  findTyleBy(row, column) {
+    return this.tiles.find((tile) => tile.row === row && tile.column === column);
   }
 
   isSelectedNeighbours(row, column) {
@@ -89,10 +89,31 @@ export class Grid {
       this.isGameBlocked = false;
       return;
     }
+
+    await this.removeTiles(swapStates[0]);
   }
 
   async moveTileTo(tile, position) {
     tile.setPositionBy(position.row, position.column);
     await tile.waitForTransitionEnd();
+  }
+
+  async removeTiles(grid) {
+    const animations = [];
+    for (let row = 0; row < grid.length; row++) {
+      for (let column = 0; column < grid[0].length; column++) {
+        if (grid[row][column] === null) {
+          const tile = this.findTyleBy(row, column);
+          const tileAnimation = tile.remove();
+          this.removeTileFromArrayBy(row, column);
+          animations.push(tileAnimation);
+        }
+      }
+    }
+    await Promise.all(animations);
+  }
+
+  removeTileFromArrayBy(row, column) {
+    this.tiles = this.tiles.filter((tile) => tile.row !== row || tile.column !== column);
   }
 }

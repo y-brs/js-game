@@ -58,6 +58,17 @@ body {
   border: 3px solid #ffffe0;
 }
 
+.tile.hide {
+  opacity: 0;
+  animation: hide 200ms;
+}
+
+@keyframes hide {
+  0% {
+    opacity: 1;
+  }
+}
+
 .tile1 {
   background-color: #ffe4b2;
 }
