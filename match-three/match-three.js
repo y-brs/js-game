@@ -1,11 +1,11 @@
 import { Game } from './game.js';
+import { Grid } from './grid.js';
 
 export class MatchThree {
   wrapper = document.querySelector('.wrapper');
 
   constructor(rowsCount, columnsCount, tilesCount) {
     this.game = new Game(rowsCount, columnsCount, tilesCount);
-
-    console.log(this.game.matrix);
+    this.grid = new Grid(this.wrapper, this.game.matrix);
   }
 }

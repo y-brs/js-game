@@ -29,3 +29,54 @@ body {
   max-width: 500px;
   max-height: 500px;
 }
+
+.tile {
+  --size: 12.5%;
+  --row: 0;
+  --column: 0;
+  position: absolute;
+  box-sizing: border-box;
+  width: var(--size);
+  height: var(--size);
+  top: calc(var(--row) * var(--size));
+  left: calc(var(--column) * var(--size));
+  cursor: pointer;
+  border: 3px solid #353535;
+  border-radius: 50%;
+  transition-property: top, left;
+  transition-duration: 140ms;
+  animation: show 50ms;
+}
+
+@keyframes show {
+  0% {
+    opacity: 0.5;
+  }
+}
+
+.tile1 {
+  background-color: #ffe4b2;
+}
+
+.tile2 {
+  background-color: #ffa07a;
+}
+.tile3 {
+  background-color: #98fb98;
+}
+
+.tile4 {
+  background-color: #7ec8e3;
+}
+
+.tile5 {
+  background-color: #4d6fac;
+}
+
+.tile6 {
+  background-color: #9370db;
+}
+
+.tile7 {
+  background-color: #ffb6c1;
+}
