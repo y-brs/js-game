@@ -37,11 +37,25 @@ function handleInput(event) {
       return;
   }
 
+  const newTile = new Tile(gameBoard);
+  grid.getRandomEmptyCell().linkTile(newTile);
+
   setupInputOnce();
 }
 
 function moveUp() {
   slideTiles(grid.cellsGroupedByColumn);
+}
+function moveDown() {
+  slideTiles(grid.cellsGroupedByReversedColumn);
+}
+
+function moveLeft() {
+  slideTiles(grid.cellsGroupedByRow);
+}
+
+function moveRight() {
+  slideTiles(grid.cellsGroupedByReversedRow);
 }
 
 function slideTiles(groupedCells) {
