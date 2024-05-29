@@ -17,6 +17,7 @@ body {
 #game-board {
   --cell-size: 20vmin;
   --cell-gap: 2vmin;
+
   position: relative;
   display: grid;
   grid-template-columns: repeat(4, var(--cell-size));
