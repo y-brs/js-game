@@ -4,10 +4,8 @@ import { Tile } from './tile.js';
 const gameBoard = document.getElementById('game-board');
 
 const grid = new Grid(gameBoard);
-
 grid.getRandomEmptyCell().linkTile(new Tile(gameBoard));
 grid.getRandomEmptyCell().linkTile(new Tile(gameBoard));
-
 setupInputOnce();
 
 function setupInputOnce() {
@@ -23,7 +21,6 @@ async function handleInput(event) {
       }
       await moveUp();
       break;
-
     case 'ArrowDown':
       if (!canMoveDown()) {
         setupInputOnce();
@@ -31,7 +28,6 @@ async function handleInput(event) {
       }
       await moveDown();
       break;
-
     case 'ArrowLeft':
       if (!canMoveLeft()) {
         setupInputOnce();
@@ -39,7 +35,6 @@ async function handleInput(event) {
       }
       await moveLeft();
       break;
-
     case 'ArrowRight':
       if (!canMoveRight()) {
         setupInputOnce();
@@ -47,16 +42,15 @@ async function handleInput(event) {
       }
       await moveRight();
       break;
-
     default:
-      await setupInputOnce();
+      setupInputOnce();
       return;
   }
 
   const newTile = new Tile(gameBoard);
   grid.getRandomEmptyCell().linkTile(newTile);
 
-  if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight) {
+  if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()) {
     await newTile.waitForAnimationEnd();
     alert('Try again!');
     return;
@@ -87,7 +81,6 @@ async function slideTiles(groupedCells) {
   groupedCells.forEach((group) => slideTilesInGroup(group, promises));
 
   await Promise.all(promises);
-
   grid.cells.forEach((cell) => {
     cell.hasTileForMerge() && cell.mergeTiles();
   });
@@ -146,7 +139,7 @@ function canMove(groupedCells) {
 
 function canMoveInGroup(group) {
   return group.some((cell, index) => {
-    if (index == 0) {
+    if (index === 0) {
       return false;
     }
 

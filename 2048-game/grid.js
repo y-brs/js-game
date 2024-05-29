@@ -1,20 +1,19 @@
 import { Cell } from './cell.js';
 
 const GRID_SIZE = 4;
-const CELL_COUNT = GRID_SIZE * GRID_SIZE;
+const CELLS_COUNT = GRID_SIZE * GRID_SIZE;
 
 export class Grid {
   constructor(gridElement) {
     this.cells = [];
-
-    for (let i = 0; i < CELL_COUNT; i++) {
+    for (let i = 0; i < CELLS_COUNT; i++) {
       this.cells.push(new Cell(gridElement, i % GRID_SIZE, Math.floor(i / GRID_SIZE)));
     }
 
     this.cellsGroupedByColumn = this.groupCellsByColumn();
-    this.cellsGroupedByReversedColumn = this.groupCellsByColumn().map((column) => [...column].reverse());
+    this.cellsGroupedByReversedColumn = this.cellsGroupedByColumn.map((column) => [...column].reverse());
     this.cellsGroupedByRow = this.groupCellsByRow();
-    this.cellsGroupedByReversedRow = this.groupCellsByRow().map((row) => [...row].reverse());
+    this.cellsGroupedByReversedRow = this.cellsGroupedByRow.map((raw) => [...raw].reverse());
   }
 
   getRandomEmptyCell() {
